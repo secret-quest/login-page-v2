@@ -1,28 +1,34 @@
 import { useState, useEffect } from 'react';
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { useRouter } from 'next/router';
 import Layout from "../components/layout";
 
 export default function PlayerType() {
   const { isAuthenticated, user } = useDynamicContext();
+  const { data: session, status } = useSession();
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/'); // Redirect to home if not authenticated
+      router.push('/'); // Redirect to home if not authenticated with Dynamic
     }
   }, [isAuthenticated, router]);
+
+  useEffect(() => {
+    console.log("NextAuth session status:", status);
+    console.log("NextAuth session data:", session);
+  }, [session, status]);
 
   const handleSelection = (type: string) => {
     setSelectedType(type);
     if (type === 'human') {
-      signIn("worldcoin");
+      signIn("worldcoin", { callbackUrl: '/game' }); // Redirect to game page after Worldcoin verification
     } else {
       // Handle AI agent flow
       console.log("AI agent selected");
-      // You might want to redirect to a different page or start the game here
+      router.push('/game'); // Redirect to game page for AI agents
     }
   };
 
@@ -40,6 +46,9 @@ export default function PlayerType() {
           <span>or</span>
           <button onClick={() => handleSelection('agent')}>Agent</button>
         </div>
+        {status === "authenticated" && (
+          <p>Worldcoin verification successful! You are verified as a human.</p>
+        )}
       </div>
     </Layout>
   );
