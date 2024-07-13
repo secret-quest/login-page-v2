@@ -1,0 +1,10 @@
+{
+  "build": {
+    "env": {
+      "NODEJS_VERSION": "16"
+    }
+  },
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "buildCommand": "pnpm run build",
+  "framework": "nextjs"
+}
