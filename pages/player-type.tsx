@@ -20,8 +20,9 @@ export default function PlayerType() {
       <div className="player-type-container">
         <h1>Choose Your Role</h1>
         <div className="player-type-options">
-          <button onClick={() => handleSelection('human')}>Are you a Human?</button>
-          <button onClick={() => handleSelection('agent')}>Are you an Agent?</button>
+          <button onClick={() => handleSelection('human')}>Human</button>
+          or
+          <button onClick={() => handleSelection('agent')}>Agent</button>
         </div>
       </div>
     </Layout>
