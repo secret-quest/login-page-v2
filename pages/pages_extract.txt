@@ -1,0 +1,716 @@
+rootfolder: pages
+
+index.tsx
+import { DynamicWidget, useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { useEffect, useState } from 'react';
+import { signIn, signOut, useSession } from "next-auth/react";
+import Layout from "../components/layout";
+
+export default function Home() {
+  const { user: dynamicUser } = useDynamicContext();
+  const { data: session, status } = useSession();
+  const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    const video = document.getElementById('bg-video') as HTMLVideoElement;
+    if (video) {
+      video.playbackRate = 0.5;
+    }
+  }, []);
+
+  const handleJoinLobby = (lobbyType: string) => {
+    if (session) {
+      console.log(`Joining ${lobbyType} lobby`);
+      // Add your lobby joining logic here
+    } else {
+      setVerificationStatus("Please sign in with Worldcoin to join player lobbies.");
+    }
+  };
+
+  return (
+    <Layout>
+      <div className="content-wrapper">
+        <header>
+          <div className="container">
+            <nav>
+              <div className="logo">Secret Quest</div>
+              <div className="nav-links">
+                <DynamicWidget />
+                {!session ? (
+                  <button onClick={() => signIn("worldcoin")} className="worldcoin-button">Sign in with Worldcoin</button>
+                ) : (
+                  <button onClick={() => signOut()} className="worldcoin-button">Sign out</button>
+                )}
+                <button className="cta-button" onClick={() => handleJoinLobby('Main')}>Join Lobby</button>
+              </div>
+            </nav>
+          </div>
+        </header>
+
+        <main>
+          {/* ... rest of your main content ... */}
+        </main>
+
+        <video autoPlay muted loop playsInline id="bg-video">
+          <source src="/v7.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </Layout>
+  );
+}
+
+server.tsx
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "./api/auth/[...nextauth]"
+import Layout from "../components/layout"
+
+import type { GetServerSidePropsContext } from "next"
+import { useSession } from "next-auth/react"
+
+export default function ServerSidePage() {
+  const { data: session } = useSession()
+  // As this page uses Server Side Rendering, the `session` will be already
+  // populated on render without needing to go through a loading stage.
+  return (
+    <Layout>
+      <h1>Server Side Rendering</h1>
+      <p>
+        This page uses the <strong>getServerSession()</strong> method in{" "}
+        <strong>getServerSideProps()</strong>.
+      </p>
+      <p>
+        Using <strong>getServerSession()</strong> in{" "}
+        <strong>getServerSideProps()</strong> is the recommended approach if you
+        need to support Server Side Rendering with authentication.
+      </p>
+      <p>
+        The advantage of Server Side Rendering is this page does not require
+        client side JavaScript.
+      </p>
+      <p>
+        The disadvantage of Server Side Rendering is that this page is slower to
+        render.
+      </p>
+      <pre>{JSON.stringify(session, null, 2)}</pre>
+    </Layout>
+  )
+}
+
+// Export the `session` prop to use sessions with Server Side Rendering
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  return {
+    props: {
+      session: await getServerSession(context.req, context.res, authOptions),
+    },
+  }
+}
+
+
+policy.tsx
+import Layout from "../components/layout"
+
+export default function PolicyPage() {
+  return (
+    <Layout>
+      <p>
+        This is an example site to demonstrate how to use{" "}
+        <a href="https://next-auth.js.org">NextAuth.js</a> for authentication.
+      </p>
+      <h2>Terms of Service</h2>
+      <p>
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+        OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+        MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+        IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+        CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+        TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+      </p>
+      <h2>Privacy Policy</h2>
+      <p>
+        This site uses JSON Web Tokens and an in-memory database which resets
+        every ~2 hours.
+      </p>
+      <p>
+        Data provided to this site is exclusively used to support signing in and
+        is not passed to any third party services, other than via SMTP or OAuth
+        for the purposes of authentication.
+      </p>
+    </Layout>
+  )
+}
+
+
+me.tsx
+import { useSession } from "next-auth/react"
+import Layout from "../components/layout"
+
+export default function MePage() {
+  const { data } = useSession()
+
+  return (
+    <Layout>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </Layout>
+  )
+}
+
+
+styles.css
+:root {
+  --primary-color: rgba(26, 26, 26, 0.7);
+  --secondary-color: #ffffff;
+  --accent-color: #b8860b;
+  --text-color: #ffffff;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Orbitron', sans-serif;
+  color: var(--text-color);
+  overflow-x: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+/* ... rest of your CSS ... */
+
+.worldcoin-button {
+  background-color: var(--accent-color);
+  color: var(--text-color);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-right: 10px;
+}
+
+.worldcoin-button:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  box-shadow: 0 0 15px var(--accent-color);
+}
+
+/* ... rest of your CSS ... */
+
+protected.tsx
+import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+import Layout from "../components/layout"
+import AccessDenied from "../components/access-denied"
+
+export default function ProtectedPage() {
+  const { data: session } = useSession()
+  const [content, setContent] = useState()
+
+  // Fetch content from protected route
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch("/api/examples/protected")
+      const json = await res.json()
+      if (json.content) {
+        setContent(json.content)
+      }
+    }
+    fetchData()
+  }, [session])
+
+  // If no session exists, display access denied message
+  if (!session) {
+    return (
+      <Layout>
+        <AccessDenied />
+      </Layout>
+    )
+  }
+
+  // If session exists, display content
+  return (
+    <Layout>
+      <h1>Protected Page</h1>
+      <p>
+        <strong>{content ?? "\u00a0"}</strong>
+      </p>
+    </Layout>
+  )
+}
+
+
+api-example.tsx
+import Layout from "../components/layout"
+
+export default function ApiExamplePage() {
+  return (
+    <Layout>
+      <h1>API Example</h1>
+      <p>The examples below show responses from the example API endpoints.</p>
+      <p>
+        <em>You must be signed in to see responses.</em>
+      </p>
+      <h2>Session</h2>
+      <p>/api/examples/session</p>
+      <iframe src="/api/examples/session" />
+      <h2>JSON Web Token</h2>
+      <p>/api/examples/jwt</p>
+      <iframe src="/api/examples/jwt" />
+    </Layout>
+  )
+}
+
+
+client.tsx
+import Layout from "../components/layout"
+
+export default function ClientPage() {
+  return (
+    <Layout>
+      <h1>Client Side Rendering</h1>
+      <p>
+        This page uses the <strong>useSession()</strong> React Hook in the{" "}
+        <strong>&lt;Header/&gt;</strong> component.
+      </p>
+      <p>
+        The <strong>useSession()</strong> React Hook is easy to use and allows
+        pages to render very quickly.
+      </p>
+      <p>
+        The advantage of this approach is that session state is shared between
+        pages by using the <strong>Provider</strong> in <strong>_app.js</strong>{" "}
+        so that navigation between pages using <strong>useSession()</strong> is
+        very fast.
+      </p>
+      <p>
+        The disadvantage of <strong>useSession()</strong> is that it requires
+        client side JavaScript.
+      </p>
+    </Layout>
+  )
+}
+
+
+_app.tsx
+import { SessionProvider } from "next-auth/react"
+import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
+import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
+import "./styles.css"
+
+import type { AppProps } from "next/app"
+import type { Session } from "next-auth"
+
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps<{ session: Session }>) {
+  return (
+    <SessionProvider session={session}>
+      <DynamicContextProvider
+        settings={{
+          environmentId: process.env.NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID!,
+          walletConnectors: [EthereumWalletConnectors],
+        }}
+      >
+        <Component {...pageProps} />
+      </DynamicContextProvider>
+    </SessionProvider>
+  )
+}
+
+pages_extract.txt
+rootfolder: pages
+
+index.tsx
+import { DynamicWidget, useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import { useEffect, useState } from 'react';
+import { signIn, signOut, useSession } from "next-auth/react";
+import Layout from "../components/layout";
+
+export default function Home() {
+  const { user: dynamicUser } = useDynamicContext();
+  const { data: session, status } = useSession();
+  const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    const video = document.getElementById('bg-video') as HTMLVideoElement;
+    if (video) {
+      video.playbackRate = 0.5;
+    }
+  }, []);
+
+  const handleJoinLobby = (lobbyType: string) => {
+    if (session) {
+      console.log(`Joining ${lobbyType} lobby`);
+      // Add your lobby joining logic here
+    } else {
+      setVerificationStatus("Please sign in with Worldcoin to join player lobbies.");
+    }
+  };
+
+  return (
+    <Layout>
+      <div className="content-wrapper">
+        <header>
+          <div className="container">
+            <nav>
+              <div className="logo">Secret Quest</div>
+              <div className="nav-links">
+                <DynamicWidget />
+                {!session ? (
+                  <button onClick={() => signIn("worldcoin")} className="worldcoin-button">Sign in with Worldcoin</button>
+                ) : (
+                  <button onClick={() => signOut()} className="worldcoin-button">Sign out</button>
+                )}
+                <button className="cta-button" onClick={() => handleJoinLobby('Main')}>Join Lobby</button>
+              </div>
+            </nav>
+          </div>
+        </header>
+
+        <main>
+          {/* ... rest of your main content ... */}
+        </main>
+
+        <video autoPlay muted loop playsInline id="bg-video">
+          <source src="/v7.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </Layout>
+  );
+}
+
+server.tsx
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "./api/auth/[...nextauth]"
+import Layout from "../components/layout"
+
+import type { GetServerSidePropsContext } from "next"
+import { useSession } from "next-auth/react"
+
+export default function ServerSidePage() {
+  const { data: session } = useSession()
+  // As this page uses Server Side Rendering, the `session` will be already
+  // populated on render without needing to go through a loading stage.
+  return (
+    <Layout>
+      <h1>Server Side Rendering</h1>
+      <p>
+        This page uses the <strong>getServerSession()</strong> method in{" "}
+        <strong>getServerSideProps()</strong>.
+      </p>
+      <p>
+        Using <strong>getServerSession()</strong> in{" "}
+        <strong>getServerSideProps()</strong> is the recommended approach if you
+        need to support Server Side Rendering with authentication.
+      </p>
+      <p>
+        The advantage of Server Side Rendering is this page does not require
+        client side JavaScript.
+      </p>
+      <p>
+        The disadvantage of Server Side Rendering is that this page is slower to
+        render.
+      </p>
+      <pre>{JSON.stringify(session, null, 2)}</pre>
+    </Layout>
+  )
+}
+
+// Export the `session` prop to use sessions with Server Side Rendering
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  return {
+    props: {
+      session: await getServerSession(context.req, context.res, authOptions),
+    },
+  }
+}
+
+
+policy.tsx
+import Layout from "../components/layout"
+
+export default function PolicyPage() {
+  return (
+    <Layout>
+      <p>
+        This is an example site to demonstrate how to use{" "}
+        <a href="https://next-auth.js.org">NextAuth.js</a> for authentication.
+      </p>
+      <h2>Terms of Service</h2>
+      <p>
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+        OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+        MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+        IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+        CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+        TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+        SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+      </p>
+      <h2>Privacy Policy</h2>
+      <p>
+        This site uses JSON Web Tokens and an in-memory database which resets
+        every ~2 hours.
+      </p>
+      <p>
+        Data provided to this site is exclusively used to support signing in and
+        is not passed to any third party services, other than via SMTP or OAuth
+        for the purposes of authentication.
+      </p>
+    </Layout>
+  )
+}
+
+
+me.tsx
+import { useSession } from "next-auth/react"
+import Layout from "../components/layout"
+
+export default function MePage() {
+  const { data } = useSession()
+
+  return (
+    <Layout>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </Layout>
+  )
+}
+
+
+styles.css
+:root {
+  --primary-color: rgba(26, 26, 26, 0.7);
+  --secondary-color: #ffffff;
+  --accent-color: #b8860b;
+  --text-color: #ffffff;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Orbitron', sans-serif;
+  color: var(--text-color);
+  overflow-x: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+/* ... rest of your CSS ... */
+
+.worldcoin-button {
+  background-color: var(--accent-color);
+  color: var(--text-color);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-right: 10px;
+}
+
+.worldcoin-button:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  box-shadow: 0 0 15px var(--accent-color);
+}
+
+/* ... rest of your CSS ... */
+
+protected.tsx
+import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+import Layout from "../components/layout"
+import AccessDenied from "../components/access-denied"
+
+export default function ProtectedPage() {
+  const { data: session } = useSession()
+  const [content, setContent] = useState()
+
+  // Fetch content from protected route
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch("/api/examples/protected")
+      const json = await res.json()
+      if (json.content) {
+        setContent(json.content)
+      }
+    }
+    fetchData()
+  }, [session])
+
+  // If no session exists, display access denied message
+  if (!session) {
+    return (
+      <Layout>
+        <AccessDenied />
+      </Layout>
+    )
+  }
+
+  // If session exists, display content
+  return (
+    <Layout>
+      <h1>Protected Page</h1>
+      <p>
+        <strong>{content ?? "\u00a0"}</strong>
+      </p>
+    </Layout>
+  )
+}
+
+
+api-example.tsx
+import Layout from "../components/layout"
+
+export default function ApiExamplePage() {
+  return (
+    <Layout>
+      <h1>API Example</h1>
+      <p>The examples below show responses from the example API endpoints.</p>
+      <p>
+        <em>You must be signed in to see responses.</em>
+      </p>
+      <h2>Session</h2>
+      <p>/api/examples/session</p>
+      <iframe src="/api/examples/session" />
+      <h2>JSON Web Token</h2>
+      <p>/api/examples/jwt</p>
+      <iframe src="/api/examples/jwt" />
+    </Layout>
+  )
+}
+
+
+client.tsx
+
+
+admin.tsx
+import Layout from "../components/layout"
+
+export default function Page() {
+  return (
+    <Layout>
+      <h1>This page is protected by NextAuth Middleware</h1>
+      <p>Only admin users can see this page.</p>
+      <p>
+        To learn more about the NextAuth middleware see&nbsp;
+        <a href="https://next-auth.js.org/configuration/nextjs#middleware">
+          the docs
+        </a>
+        .
+      </p>
+    </Layout>
+  )
+}
+
+
+api/auth/[...nextauth].ts
+import NextAuth, { NextAuthOptions } from "next-auth";
+
+// For more information on each option (and a full list of options) go to
+// https://next-auth.js.org/configuration/options
+export const authOptions: NextAuthOptions = {
+  // https://next-auth.js.org/configuration/providers/oauth
+  providers: [
+    {
+      id: "worldcoin",
+      name: "Worldcoin",
+      type: "oauth",
+      wellKnown: "https://id.worldcoin.org/.well-known/openid-configuration",
+      authorization: { params: { scope: "openid" } },
+      clientId: process.env.WLD_CLIENT_ID,
+      clientSecret: process.env.WLD_CLIENT_SECRET,
+      idToken: true,
+      checks: ["state", "nonce", "pkce"],
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.sub,
+          verificationLevel:
+            profile["https://id.worldcoin.org/v1"].verification_level,
+        };
+      },
+    },
+  ],
+  callbacks: {
+    async jwt({ token }) {
+      token.userRole = "admin";
+      return token;
+    },
+  },
+  debug: true,
+};
+
+export default NextAuth(authOptions);
+
+
+api/examples/jwt.ts
+// This is an example of how to read a JSON Web Token from an API route
+import { getToken } from "next-auth/jwt"
+
+import type { NextApiRequest, NextApiResponse } from "next"
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  // If you don't have the NEXTAUTH_SECRET environment variable set,
+  // you will have to pass your secret as `secret` to `getToken`
+  const token = await getToken({ req })
+  res.send(JSON.stringify(token, null, 2))
+}
+
+
+api/examples/session.ts
+// This is an example of how to access a session from an API route
+import { getServerSession } from "next-auth"
+import { authOptions } from "../auth/[...nextauth]"
+
+import type { NextApiRequest, NextApiResponse } from "next"
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const session = await getServerSession(req, res, authOptions)
+  res.send(JSON.stringify(session, null, 2))
+}
+
+
+api/examples/protected.ts
+// This is an example of to protect an API route
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "../auth/[...nextauth]"
+
+import type { NextApiRequest, NextApiResponse } from "next"
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const session = await getServerSession(req, res, authOptions)
+
+  if (session) {
+    return res.send({
+      content:
+        "This is protected content. You can access this content because you are signed in.",
+    })
+  }
+
+  res.send({
+    error: "You must be signed in to view the protected content on this page.",
+  })
+}
+
+
