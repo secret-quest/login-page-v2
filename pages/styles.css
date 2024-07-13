@@ -1,32 +1,42 @@
-body {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  padding: 0 1rem 1rem 1rem;
-  max-width: 680px;
-  margin: 0 auto;
-  background: #fff;
-  color: #333;
+:root {
+  --primary-color: rgba(26, 26, 26, 0.7);
+  --secondary-color: #ffffff;
+  --accent-color: #b8860b;
+  --text-color: #ffffff;
 }
 
-li,
-p {
-  line-height: 1.5rem;
-}
-
-a {
-  font-weight: 500;
-}
-
-hr {
-  border: 1px solid #ddd;
-}
-
-iframe {
-  background: #ccc;
-  border: 1px solid #ccc;
-  height: 10rem;
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Orbitron', sans-serif;
+  color: var(--text-color);
+  overflow-x: hidden;
+  height: 100%;
   width: 100%;
-  border-radius: 0.5rem;
-  filter: invert(1);
 }
+
+/* ... rest of your CSS ... */
+
+.worldcoin-button {
+  background-color: var(--accent-color);
+  color: var(--text-color);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-right: 10px;
+}
+
+.worldcoin-button:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  box-shadow: 0 0 15px var(--accent-color);
+}
+
+/* ... rest of your CSS ... */
