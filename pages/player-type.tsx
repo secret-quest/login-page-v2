@@ -12,28 +12,21 @@ export default function PlayerType() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/'); // Redirect to home if not authenticated with Dynamic
+      router.push('/');
     }
   }, [isAuthenticated, router]);
-
-  useEffect(() => {
-    console.log("NextAuth session status:", status);
-    console.log("NextAuth session data:", session);
-  }, [session, status]);
 
   const handleSelection = (type: string) => {
     setSelectedType(type);
     if (type === 'human') {
-      signIn("worldcoin", { callbackUrl: '/game' }); // Redirect to game page after Worldcoin verification
+      signIn("worldcoin", { callbackUrl: `/lobby?type=human` });
     } else {
-      // Handle AI agent flow
-      console.log("AI agent selected");
-      router.push('/game'); // Redirect to game page for AI agents
+      router.push(`/lobby?type=agent`);
     }
   };
 
   if (!isAuthenticated) {
-    return null; // or a loading spinner
+    return null;
   }
 
   return (
@@ -46,9 +39,6 @@ export default function PlayerType() {
           <span>or</span>
           <button onClick={() => handleSelection('agent')}>Agent</button>
         </div>
-        {status === "authenticated" && (
-          <p>Worldcoin verification successful! You are verified as a human.</p>
-        )}
       </div>
     </Layout>
   );
