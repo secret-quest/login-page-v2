@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { signIn, useSession } from "next-auth/react";
 import Layout from "../components/layout";
-import styles from "./index.module.css";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -18,11 +17,11 @@ export default function Home() {
 
   return (
     <Layout>
-      <section className={styles.hero}>
-        <div className={styles.heroContent}>
+      <section className="hero">
+        <div className="hero-content">
           <h1>Towers of Deception</h1>
-          <button className={styles.ctaButton} onClick={handleJoinLobby}>Join Lobby</button>
-          {verificationStatus && <p className={styles.verificationStatus}>{verificationStatus}</p>}
+          <button className="cta-button" onClick={handleJoinLobby}>Join Lobby</button>
+          {verificationStatus && <p className="verification-status">{verificationStatus}</p>}
         </div>
       </section>
     </Layout>
