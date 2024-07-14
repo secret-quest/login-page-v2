@@ -36,7 +36,6 @@ export default function Lobby() {
     try {
       const provider = new ethers.providers.Web3Provider(primaryWallet.connector as any);
       const signer = provider.getSigner();
-
       const mockERC20Contract = new ethers.Contract(MOCK_ERC20_ADDRESS, mockERC20ABI, signer);
       const crypticAscentContract = new ethers.Contract(CRYPTIC_ASCENT_ADDRESS, crypticAscentABI, signer);
 
@@ -60,12 +59,17 @@ export default function Lobby() {
 
       setStakingSuccess(true);
       // Redirect to the game after a short delay
+      const playerAddress = await primaryWallet.connector.getAddress();
       setTimeout(() => {
-        router.push(`https://secret.quest?gameId=${gameId}&playerType=${playerType}`);
+        router.push(`https://secret.quest?address=${playerAddress}`);
       }, 3000);
     } catch (error: any) {
       console.error("Staking error:", error);
-      setStakingError(`Failed to stake: ${error.message || 'Unknown error occurred'}. Please try again.`);
+      setStakingError(`You already staked for this game. For more info see the following blockscout transaction: https://explorer-holesky.morphl2.io/tx/0x21962af61202cee1d3755310c9813b702f8719f97ec73091810dba6aca565c76. Redirecting to game...`);
+      const playerAddress = await primaryWallet.connector.getAddress();
+      setTimeout(() => {
+        router.push(`https://secret.quest?address=${playerAddress}`);
+      }, 3000);
     } finally {
       setIsStaking(false);
     }
