@@ -1,5 +1,5 @@
 import { SessionProvider } from "next-auth/react";
-import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
+import { DynamicContextProvider, EvmNetwork } from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import "../styles/globals.css";
 import { mergeNetworks } from "@dynamic-labs/sdk-react-core";
@@ -7,7 +7,7 @@ import { mergeNetworks } from "@dynamic-labs/sdk-react-core";
 import type { AppProps } from "next/app";
 import type { Session } from "next-auth";
 
-const customEvmNetworks = [
+const customEvmNetworks: EvmNetwork[] = [
   {
     blockExplorerUrls: ['https://explorer-holesky.morphl2.io'],
     chainId: 2810,
