@@ -23,21 +23,21 @@ const customEvmNetworks: EvmNetwork[] = [
     rpcUrls: ['https://rpc-quicknode-holesky.morphl2.io'],
     vanityName: 'Holesky',
   },
-  {
-    blockExplorerUrls: ['https://holesky.etherscan.io'],
-    chainId: 17000,
-    chainName: 'Ethereum Holesky',
-    iconUrls: ['https://app.dynamic.xyz/assets/networks/eth.svg'],
-    name: 'Ethereum Holesky',
-    nativeCurrency: {
-      decimals: 18,
-      name: 'Holesky Ether',
-      symbol: 'ETH',
-    },
-    networkId: 17000,
-    rpcUrls: ['https://ethereum-holesky-rpc.publicnode.com/'],
-    vanityName: 'Holesky',
-  },
+  // {
+  //   blockExplorerUrls: ['https://holesky.etherscan.io'],
+  //   chainId: 17000,
+  //   chainName: 'Ethereum Holesky',
+  //   iconUrls: ['https://app.dynamic.xyz/assets/networks/eth.svg'],
+  //   name: 'Ethereum Holesky',
+  //   nativeCurrency: {
+  //     decimals: 18,
+  //     name: 'Holesky Ether',
+  //     symbol: 'ETH',
+  //   },
+  //   networkId: 17000,
+  //   rpcUrls: ['https://ethereum-holesky-rpc.publicnode.com/'],
+  //   vanityName: 'Holesky',
+  // },
   {
     blockExplorerUrls: ['https://explorer-testnet.morphl2.io'],
     chainId: 2710,
@@ -53,21 +53,21 @@ const customEvmNetworks: EvmNetwork[] = [
     rpcUrls: ['https://rpc-testnet.morphl2.io'],
     vanityName: 'Sepolia',
   },
-  {
-    blockExplorerUrls: ['https://sepolia.etherscan.io'],
-    chainId: 11155111,
-    chainName: 'Ethereum Sepolia',
-    iconUrls: ['https://app.dynamic.xyz/assets/networks/eth.svg'],
-    name: 'Ethereum Sepolia',
-    nativeCurrency: {
-      decimals: 18,
-      name: 'Sepolia Ether',
-      symbol: 'ETH',
-    },
-    networkId: 11155111,
-    rpcUrls: ['https://eth-sepolia-public.unifra.io'],
-    vanityName: 'Sepolia',
-  },
+  // {
+  //   blockExplorerUrls: ['https://sepolia.etherscan.io'],
+  //   chainId: 11155111,
+  //   chainName: 'Ethereum Sepolia',
+  //   iconUrls: ['https://app.dynamic.xyz/assets/networks/eth.svg'],
+  //   name: 'Ethereum Sepolia',
+  //   nativeCurrency: {
+  //     decimals: 18,
+  //     name: 'Sepolia Ether',
+  //     symbol: 'ETH',
+  //   },
+  //   networkId: 11155111,
+  //   rpcUrls: ['https://eth-sepolia-public.unifra.io'],
+  //   vanityName: 'Sepolia',
+  // },
 ];
 
 const DynamicSettings = {
