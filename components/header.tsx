@@ -6,7 +6,7 @@ export default function Header() {
       <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet"></link>
       <div className="container">
         <nav>
-          <div className="logo">Secret Quest</div>
+          <a href="https://login-page-v2-blue.vercel.app/" className="logo">Secret Quest</a>
           <div className="nav-links">
             <DynamicWidget />
           </div>
