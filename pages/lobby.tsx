@@ -34,21 +34,14 @@ export default function Lobby() {
     setStakingSuccess(false);
 
     try {
-      const provider = await primaryWallet.getEthersProvider();
+      const provider = new ethers.providers.Web3Provider(primaryWallet.connector as any);
       const signer = provider.getSigner();
 
       const mockERC20Contract = new ethers.Contract(MOCK_ERC20_ADDRESS, mockERC20ABI, signer);
       const crypticAscentContract = new ethers.Contract(CRYPTIC_ASCENT_ADDRESS, crypticAscentABI, signer);
 
-      // Check if user has enough tokens
-      const balance = await mockERC20Contract.balanceOf(await signer.getAddress());
-      const requiredAmount = ethers.utils.parseEther("100");
-      if (balance.lt(requiredAmount)) {
-        throw new Error("Insufficient token balance. You need at least 100 tokens to stake.");
-      }
-
       // Approve token spending
-      const approvalTx = await mockERC20Contract.approve(CRYPTIC_ASCENT_ADDRESS, requiredAmount);
+      const approvalTx = await mockERC20Contract.approve(CRYPTIC_ASCENT_ADDRESS, ethers.utils.parseEther("100"));
       await approvalTx.wait();
 
       // Create game and stake
