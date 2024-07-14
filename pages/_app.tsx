@@ -1,5 +1,5 @@
 import { SessionProvider } from "next-auth/react";
-import { DynamicContextProvider, EvmNetwork } from "@dynamic-labs/sdk-react-core";
+import { DynamicContextProvider, EvmNetwork} from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import "../styles/globals.css";
 import { mergeNetworks } from "@dynamic-labs/sdk-react-core";
@@ -72,7 +72,12 @@ const customEvmNetworks: EvmNetwork[] = [
 
 const DynamicSettings = {
   overrides: {
-    evmNetworks: (networks) => mergeNetworks(customEvmNetworks, networks),
+    evmNetworks: (dashboardNetworks: any[]): any[] => {
+      const evmNetworks = dashboardNetworks.filter((network): network is EvmNetwork => 
+        'chainId' in network && typeof network.chainId === 'number'
+      );
+      return mergeNetworks(customEvmNetworks, evmNetworks);
+    },
   },
 };
 
@@ -94,3 +99,4 @@ export default function App({
     </SessionProvider>
   );
 }
+
